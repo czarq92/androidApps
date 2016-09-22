@@ -2,26 +2,35 @@ package firstapp.com.firstapp;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-    Button startButton;
     FloatingActionButton fab;
     MediaPlayer mediaPlayer;
+    TextView sensorTextView;
+    TextView fapPointsResult;
 
-    int i = 0;
+    int counter = 0;
+    int fapPoints = 0;
+
+    int beginSesnorValue = 0;
+    boolean wasDown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,19 +54,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        startButton = (Button) findViewById(R.id.startButton);
-        startButton.setOnClickListener(new View.OnClickListener() {
+        SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), 0, null);
+
+        sensorTextView = (TextView) findViewById(R.id.sensorTextView);
+
+        final View include = (View) findViewById(R.id.include);
+        include.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("DEBUG", "Onclick in button startButton");
-
-                i++;
+                counter++;
 
                 fab.setRotation(fab.getRotation() + 30);
 
-                Toast.makeText(getApplicationContext(), "BANG! [" + i + "]", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "BANG! [" + counter + "]", Toast.LENGTH_SHORT).show();
             }
         });
+
+        fapPointsResult = (TextView) findViewById(R.id.fapPoints);
     }
 
     @Override
@@ -89,5 +103,27 @@ public class MainActivity extends AppCompatActivity {
     public void startActivity(Class intentClass){
         Intent intent = new Intent(this, intentClass);
         startActivity(intent);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        sensorTextView.setText("Azymut = " + (int) event.values[0] + "\nWychylenie góra/dół = " + (int) event.values[1]
+                                + "\nWychylenie lewa/prawa = " + (int) event.values[2]);
+
+        if(beginSesnorValue == 0)
+            beginSesnorValue = (int) event.values[0];
+
+        if((int) event.values[0] < beginSesnorValue){
+            wasDown = true;
+        } else if(wasDown && (int) event.values[0] > beginSesnorValue){
+            fapPointsResult.setText(fapPoints++ + "");
+            wasDown = false;
+            mediaPlayer.start();
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }

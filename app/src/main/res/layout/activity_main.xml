@@ -21,6 +21,9 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <include layout="@layout/content_main"
+        android:id="@+id/include" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -28,12 +31,9 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_dialog_alert"
         app:layout_anchorGravity="center_vertical|center_horizontal"
-        android:layout_gravity="top|center_horizontal"
+        android:layout_gravity="center_vertical|center_horizontal"
         app:fabSize="normal"
         app:elevation="14dp"
         app:layout_anchor="@+id/include" />
-
-    <include layout="@layout/content_main"
-        android:id="@+id/include" />
 
 </android.support.design.widget.CoordinatorLayout>
