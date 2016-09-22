@@ -1,6 +1,8 @@
 package firstapp.com.firstapp;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,17 +13,13 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import java.util.Random;
-import java.util.concurrent.locks.ReadWriteLock;
 
 public class MainActivity extends AppCompatActivity {
 
     Button startButton;
     FloatingActionButton fab;
+    MediaPlayer mediaPlayer;
 
     int i = 0;
 
@@ -29,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mediaPlayer = MediaPlayer.create(this, R.raw.fapp);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(Color.RED);
@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mediaPlayer.start();
+
                 Snackbar.make(view, "Czego tu szukasz, Pajacu ?!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -56,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "BANG! [" + i + "]", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     @Override
@@ -75,9 +76,18 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(SettingsIntent.class);
             return true;
+        }
+        if(id == R.id.calculate){
+            startActivity(CalculateIntent.class);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void startActivity(Class intentClass){
+        Intent intent = new Intent(this, intentClass);
+        startActivity(intent);
     }
 }
